@@ -1,8 +1,9 @@
 
 module Logging
   module Appenders
+
     # Accessor / Factory for the Email appender.
-    
+    #
     def email( *args )
       return ::Logging::Appenders::Email if args.empty?
       ::Logging::Appenders::Email.new(*args)

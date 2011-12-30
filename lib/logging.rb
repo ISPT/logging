@@ -12,6 +12,8 @@ require 'little-plugger'
 
 HAVE_SYSLOG = require? 'syslog'
 
+#
+#
 module Logging
   extend LittlePlugger
 
@@ -490,6 +492,7 @@ module Logging
       ::Logging::Logger[::Logging].__send__(levelify(LNAMES[level]), &block)
     end
 
+    # Close all appenders
     def shutdown
       log_internal {'shutdown called - closing all appenders'}
       ::Logging::Appenders.each {|appender| appender.close}
