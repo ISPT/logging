@@ -15,14 +15,6 @@ HAVE_SYSLOG = require? 'syslog'
 module Logging
   extend LittlePlugger
 
-  class Cleaner
-    # Close all appenders
-    def finalize(id)
-      ::Logging::Appenders.each {|appender| appender.close}
-      puts "Cleanup------"
-    end
-  end
-
   # :stopdoc:
   LIBPATH = ::File.expand_path('..', __FILE__) + ::File::SEPARATOR
   PATH = ::File.expand_path('../..', __FILE__) + ::File::SEPARATOR
@@ -498,10 +490,13 @@ module Logging
       ::Logging::Logger[::Logging].__send__(levelify(LNAMES[level]), &block)
     end
 
-    def finalize(id)
-      puts "Finalize---------------"
+    def shutdown
       log_internal {'shutdown called - closing all appenders'}
       ::Logging::Appenders.each {|appender| appender.close}
+    end
+    
+    def finalize(id)
+      shutdown
     end
 
     # Reset the logging framework to it's uninitialized state
