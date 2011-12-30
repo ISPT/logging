@@ -20,8 +20,8 @@ module Logging
   class Cleaner
     # Close all appenders
     def finalize(id)
-      log_internal {'shutdown called - closing all appenders'}
       ::Logging::Appenders.each {|appender| appender.close}
+      puts "Cleanup------"
     end
   end
 
