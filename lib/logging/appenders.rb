@@ -105,12 +105,6 @@ module Logging
       return nil
     end
 
-    def finalize(id)
-      self.each{|appender| appender.close}
-    end
-
-    module_function :finalize
-    
     # :stopdoc:
     def reset
       @appenders.values.each {|appender|
