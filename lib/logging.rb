@@ -12,8 +12,6 @@ require 'little-plugger'
 
 HAVE_SYSLOG = require? 'syslog'
 
-#
-#
 module Logging
   extend LittlePlugger
 
@@ -34,7 +32,6 @@ module Logging
   # :startdoc:
 
   class << self
-    ObjectSpace.define_finalizer(self, Cleaner.new.method(:finalize))
 
     # call-seq:
     #    Logging.configure( filename )
@@ -501,6 +498,12 @@ module Logging
       ::Logging::Logger[::Logging].__send__(levelify(LNAMES[level]), &block)
     end
 
+    def finalize(id)
+      puts "Finalize---------------"
+      log_internal {'shutdown called - closing all appenders'}
+      ::Logging::Appenders.each {|appender| appender.close}
+    end
+
     # Reset the logging framework to it's uninitialized state
     def reset
       ::Logging::Repository.reset
@@ -542,4 +545,6 @@ Logging.libpath {
 # or e-mail servers, etc.
 #
 end  # unless defined?
+
+ObjectSpace.define_finalizer(self, ::Logging::method(:finalize))
 
