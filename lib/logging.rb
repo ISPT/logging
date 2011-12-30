@@ -17,6 +17,14 @@ HAVE_SYSLOG = require? 'syslog'
 module Logging
   extend LittlePlugger
 
+  class Cleaner
+    # Close all appenders
+    def finalize(id)
+      log_internal {'shutdown called - closing all appenders'}
+      ::Logging::Appenders.each {|appender| appender.close}
+    end
+  end
+
   # :stopdoc:
   LIBPATH = ::File.expand_path('..', __FILE__) + ::File::SEPARATOR
   PATH = ::File.expand_path('../..', __FILE__) + ::File::SEPARATOR
@@ -26,6 +34,7 @@ module Logging
   # :startdoc:
 
   class << self
+    ObjectSpace.define_finalizer(self, Cleaner.new.method(:finalize))
 
     # call-seq:
     #    Logging.configure( filename )
@@ -492,12 +501,6 @@ module Logging
       ::Logging::Logger[::Logging].__send__(levelify(LNAMES[level]), &block)
     end
 
-    # Close all appenders
-    def shutdown
-      log_internal {'shutdown called - closing all appenders'}
-      ::Logging::Appenders.each {|appender| appender.close}
-    end
-
     # Reset the logging framework to it's uninitialized state
     def reset
       ::Logging::Repository.reset
@@ -538,7 +541,5 @@ Logging.libpath {
 # This is needed for closing IO streams and connections to the syslog server
 # or e-mail servers, etc.
 #
-at_exit { Logging.shutdown }
-
 end  # unless defined?
 
