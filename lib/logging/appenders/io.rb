@@ -42,6 +42,7 @@ module Logging::Appenders
     # is closed.
     #
     def close( *args )
+      puts "Closing appender==================="
       return self if @io.nil?
       super
 
